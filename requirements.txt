@@ -1,5 +1,5 @@
 fastapi
 uvicorn
-torch
+torch==2.3.0+cpu --index-url https://download.pytorch.org/whl/cpu
 transformers
 sentencepiece

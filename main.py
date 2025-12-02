@@ -4,6 +4,7 @@ from typing import List, Dict
 import torch
 from transformers import AutoTokenizer, BertForSequenceClassification
 import uvicorn
+import os
 
 # FastAPI 앱 생성
 app = FastAPI(
@@ -73,7 +74,8 @@ def load_model():
     
     print("모델 로딩 중...")
     
-    model_dir = "./kobert_emotion_weighted"
+    # 환경변수에서 모델 경로 불러오기
+    model_path = os.getenv("MODEL_PATH", "./kobert_emotion_weighted")
     
     # 토크나이저 로드
     tokenizer = AutoTokenizer.from_pretrained(
@@ -83,7 +85,7 @@ def load_model():
     
     # 모델 로드
     model = BertForSequenceClassification.from_pretrained(
-        model_dir,
+        model_path,
         trust_remote_code=True
     )
     
