@@ -43,7 +43,7 @@ jobs:
           port: ${{ secrets.EC2_PORT }}
           script: |
             set -euo pipefail
-            cd /home/ubuntu
+            cd /home/ubuntu/Localy
 
             echo "[1/4] docker compose 검사"
             docker compose config >/dev/null
