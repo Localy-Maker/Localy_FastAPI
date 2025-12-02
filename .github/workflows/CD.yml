@@ -29,7 +29,6 @@ jobs:
           source: |
             main.py
             requirements.txt
-            Dockerfile
           target: "/home/ubuntu/Localy/fastapi"
           overwrite: true
           strip_components: 0
