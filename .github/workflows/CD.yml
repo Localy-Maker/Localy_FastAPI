@@ -6,7 +6,6 @@ on:
     paths:
       - "main.py"
       - "requirements.txt"
-      - "Dockerfile"
 
 jobs:
   deploy:
