@@ -1,0 +1,90 @@
+name: Deploy FastAPI to EC2
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "main.py"
+      - "requirements.txt"
+      - "Dockerfile"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # =============================
+      # 1) EC2에 전체 FastAPI 프로젝트 업로드
+      # =============================
+      - name: Upload FastAPI to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          source: |
+            main.py
+            requirements.txt
+            Dockerfile
+          target: "/home/ubuntu/Localy/fastapi"
+          overwrite: true
+          strip_components: 0
+
+      # =============================
+      # 2) FastAPI 재빌드 & 재시작
+      # =============================
+      - name: Build & Restart FastAPI Container
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          script: |
+            set -euo pipefail
+            cd /home/ubuntu
+
+            echo "[1/4] docker compose 검사"
+            docker compose config >/dev/null
+
+            echo "[2/4] fastapi 빌드 & 교체"
+            docker compose up -d --build fastapi
+
+            echo "[3/4] nginx reload"
+            docker exec nginx-container nginx -t
+            docker exec nginx-container nginx -s reload
+
+            echo "[4/4] FastAPI Health Check"
+
+            # 내부(nginx → fastapi)
+            if ! docker exec nginx-container curl -fsS http://fastapi:8000/healthz >/dev/null; then
+              echo "::error::❌ 내부 헬스체크 실패 (nginx → fastapi)"
+              docker logs fastapi-container --tail=100 || true
+              docker logs nginx-container --tail=100 || true
+              exit 1
+            fi
+
+            echo "✅ 내부 Health OK"
+
+            # 외부(HTTPS)
+            ok=0
+            for i in $(seq 1 20); do
+              if curl -fsS https://api.localy-maker.shop/healthz >/dev/null; then
+                echo "✅ 외부 Health OK"
+                ok=1
+                break
+              fi
+              echo "외부 Health 대기중... ($i/20)"
+              sleep 2
+            done
+
+            if [ "$ok" -eq 0 ]; then
+              echo "::error::❌ 외부 헬스체크 실패"
+              docker logs fastapi-container --tail=200 || true
+            fi
+
+            echo "🚀 FastAPI Deploy Complete!"
