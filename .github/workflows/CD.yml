@@ -41,6 +41,8 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.EC2_PORT }}
+          timeout: 600s          # SSH connection idle timeout (중요!)
+          command_timeout: 20m   # 실행 전체 timeout
           script: |
             set -euo pipefail
             cd /home/ubuntu/Localy
