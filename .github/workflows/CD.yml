@@ -61,7 +61,7 @@ jobs:
             echo "[4/4] FastAPI Health Check"
 
             # 내부(nginx → fastapi)
-            if ! docker exec nginx-container curl -fsS http://fastapi:8000/healthz >/dev/null; then
+            if ! docker exec nginx-container curl -fsS http://fastapi:8000/textEmotion/health >/dev/null; then
               echo "::error::❌ 내부 헬스체크 실패 (nginx → fastapi)"
               docker logs fastapi-container --tail=100 || true
               docker logs nginx-container --tail=100 || true
@@ -73,7 +73,7 @@ jobs:
             # 외부(HTTPS)
             ok=0
             for i in $(seq 1 20); do
-              if curl -fsS https://api.localy-maker.shop/healthz >/dev/null; then
+              if curl -fsS https://api.localy-maker.shop/health >/dev/null; then
                 echo "✅ 외부 Health OK"
                 ok=1
                 break
