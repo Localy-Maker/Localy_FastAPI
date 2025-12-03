@@ -10,7 +10,10 @@ import os
 app = FastAPI(
     title="감정 분류 API",
     description="한국어 텍스트의 감정을 6가지로 분류하는 API",
-    version="1.0.0"
+    version="1.0.0",
+    docs_url="/textEmotion/docs",   # Swagger UI 경로 변경
+    redoc_url="/textEmotion/redoc", # ReDoc 경로 변경 (원하면)
+    openapi_url="/textEmotion/openapi.json"  # OpenAPI 스펙 경로
 )
 
 # 전역 변수로 모델과 토크나이저 저장
@@ -144,20 +147,20 @@ async def startup_event():
 
 
 # 루트 엔드포인트
-@app.get("/")
+@app.get("/textEmotion/")
 async def root():
     return {
         "message": "감정 분류 API에 오신 것을 환영합니다!",
         "endpoints": {
-            "POST /predict": "단일 텍스트 감정 분류",
-            "POST /predict/batch": "여러 텍스트 일괄 분류",
-            "GET /health": "서버 상태 확인"
+            "POST /textEmotion/predict": "단일 텍스트 감정 분류",
+            "POST /textEmotion/predict/batch": "여러 텍스트 일괄 분류",
+            "GET /textEmotion/health": "서버 상태 확인"
         }
     }
 
 
 # 헬스체크 엔드포인트
-@app.get("/health")
+@app.get("/textEmotion/health")
 async def health_check():
     return {
         "status": "healthy",
@@ -167,7 +170,7 @@ async def health_check():
 
 
 # 단일 텍스트 예측 엔드포인트
-@app.post("/predict", response_model=EmotionResponse)
+@app.post("/textEmotion/predict", response_model=EmotionResponse)
 async def predict_single(request: TextRequest):
     """
     단일 텍스트의 감정을 분류합니다.
@@ -192,7 +195,7 @@ async def predict_single(request: TextRequest):
 
 
 # 배치 예측 엔드포인트
-@app.post("/predict/batch", response_model=BatchEmotionResponse)
+@app.post("/textEmotion/predict/batch", response_model=BatchEmotionResponse)
 async def predict_batch(request: BatchTextRequest):
     """
     여러 텍스트의 감정을 일괄 분류합니다.
