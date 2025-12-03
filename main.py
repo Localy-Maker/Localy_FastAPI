@@ -108,7 +108,8 @@ def predict_emotion(text: str) -> Dict:
         text,
         return_tensors="pt",
         truncation=True,
-        padding="max_length",
+        # padding="max_length",
+        padding="longest",
         max_length=64
     )
     
