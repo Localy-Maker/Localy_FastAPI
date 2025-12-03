@@ -10,7 +10,8 @@ import os
 app = FastAPI(
     title="감정 분류 API",
     description="한국어 텍스트의 감정을 6가지로 분류하는 API",
-    version="1.0.0"
+    version="1.0.0",
+    root_path="/textEmotion"  # ← 이것 추가
 )
 
 # 전역 변수로 모델과 토크나이저 저장
