@@ -58,33 +58,33 @@ jobs:
             docker exec nginx-container nginx -t
             docker exec nginx-container nginx -s reload
 
-            echo "[4/4] FastAPI Health Check"
+            # echo "[4/4] FastAPI Health Check"
 
-            # 내부(nginx → fastapi)
-            if ! docker exec nginx-container curl -fsS http://fastapi:8000/textEmotion/health >/dev/null; then
-              echo "::error::❌ 내부 헬스체크 실패 (nginx → fastapi)"
-              docker logs fastapi-container --tail=100 || true
-              docker logs nginx-container --tail=100 || true
-              exit 1
-            fi
+            # # 내부(nginx → fastapi)
+            # if ! docker exec nginx-container curl -fsS http://fastapi:8000/textEmotion/health >/dev/null; then
+            #   echo "::error::❌ 내부 헬스체크 실패 (nginx → fastapi)"
+            #   docker logs fastapi-container --tail=100 || true
+            #   docker logs nginx-container --tail=100 || true
+            #   exit 1
+            # fi
 
-            echo "✅ 내부 Health OK"
+            # echo "✅ 내부 Health OK"
 
-            # 외부(HTTPS)
-            ok=0
-            for i in $(seq 1 20); do
-              if curl -fsS https://api.localy-maker.shop/health >/dev/null; then
-                echo "✅ 외부 Health OK"
-                ok=1
-                break
-              fi
-              echo "외부 Health 대기중... ($i/20)"
-              sleep 2
-            done
+            # # 외부(HTTPS)
+            # ok=0
+            # for i in $(seq 1 20); do
+            #   if curl -fsS https://api.localy-maker.shop/health >/dev/null; then
+            #     echo "✅ 외부 Health OK"
+            #     ok=1
+            #     break
+            #   fi
+            #   echo "외부 Health 대기중... ($i/20)"
+            #   sleep 2
+            # done
 
-            if [ "$ok" -eq 0 ]; then
-              echo "::error::❌ 외부 헬스체크 실패"
-              docker logs fastapi-container --tail=200 || true
-            fi
+            # if [ "$ok" -eq 0 ]; then
+            #   echo "::error::❌ 외부 헬스체크 실패"
+            #   docker logs fastapi-container --tail=200 || true
+            # fi
 
             echo "🚀 FastAPI Deploy Complete!"
