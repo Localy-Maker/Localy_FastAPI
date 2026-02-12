@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List, Dict
 import torch
-from transformers import AutoTokenizer, BertForSequenceClassification
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import uvicorn
 import os
 
@@ -76,17 +76,19 @@ def load_model():
     print("모델 로딩 중...")
     
     # 환경변수에서 모델 경로 불러오기
-    model_path = os.getenv("MODEL_PATH", "./kobert_emotion_weighted")
+    model_path = os.getenv("MODEL_PATH", "./kobert_emotion_final")
     
     # 토크나이저 로드
     tokenizer = AutoTokenizer.from_pretrained(
-        "monologg/kobert",
-        trust_remote_code=True
+        "esperanza-Q/kobert-emotion-Localy",
+        trust_remote_code=True,
+        use_fast=False
     )
+
     
     # 모델 로드
-    model = BertForSequenceClassification.from_pretrained(
-        model_path,
+    model = AutoModelForSequenceClassification.from_pretrained(
+        "esperanza-Q/kobert-emotion-Localy",
         trust_remote_code=True
     )
     
