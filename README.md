@@ -1,12 +1,12 @@
 ## 모델 설치
 
 1. 학습된 모델을 다운로드하세요
-2. `kobert_emotion_weighted/` 폴더에 압축 해제
+2. `kobert_emotion_final/` 폴더에 압축 해제
 3. 폴더 구조:
 ```
    project/
    ├── main.py
-   ├── kobert_emotion_weighted/
+   ├── kobert_emotion_final/
    ├── requirements.txt
    ├── venv
 
