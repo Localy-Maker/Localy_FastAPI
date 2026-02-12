@@ -80,13 +80,15 @@ def load_model():
     
     # 토크나이저 로드
     tokenizer = AutoTokenizer.from_pretrained(
-        "monologg/kobert",
-        trust_remote_code=True
+        "esperanza-Q/kobert-emotion-Localy",
+        trust_remote_code=True,
+        use_fast=False
     )
+
     
     # 모델 로드
     model = AutoModelForSequenceClassification.from_pretrained(
-        model_path,
+        "esperanza-Q/kobert-emotion-Localy",
         trust_remote_code=True
     )
     
